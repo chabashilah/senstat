@@ -1,0 +1,131 @@
+/**
+ * Button. 
+ * 
+ * Click on one of the colored squares in the 
+ * center of the image to change the color of 
+ * the background. 
+ */
+ 
+int rectX, rectY;      // Position of square button
+int rectSize = 50;     // Diameter of rect
+color rectColor, circleColor, baseColor;
+color rectHighlight, circleHighlight;
+color currentColor;
+boolean rectOver = false;
+
+int xspacing = 8;   // How far apart should each horizontal location be spaced
+int w;              // Width of entire wave
+
+float theta = 0.0;  // Start angle at 0
+float amplitude = 75.0;  // Height of wave
+float period = 500.0;  // How many pixels before the wave repeats
+float dx;  // Value for incrementing X, a function of period and xspacing
+float[] yvalues;  // Using an array to store height values for the wave
+
+
+void setup()
+{
+  size(600, 400);
+  smooth();
+  rectColor = color(0);
+  rectHighlight = color(51);
+  baseColor = color(102);
+  currentColor = baseColor;
+  rectX = 10;
+  rectY = 10;  
+  ellipseMode(CENTER);
+  
+  w = width+16;
+  dx = (TWO_PI / period) * xspacing;
+  yvalues = new float[w/xspacing];
+}
+
+void draw()
+{
+  update(mouseX, mouseY);
+  background(currentColor);
+  
+  if(rectOver) {
+    fill(rectHighlight);
+  } else {
+    fill(rectColor);
+  }
+  stroke(255);
+  rect(rectX, rectY, rectSize, rectSize);
+  
+  if(circleOver) {
+    fill(circleHighlight);
+  } else {
+    fill(circleColor);
+  }
+  stroke(0);
+  ellipse(circleX, circleY, circleSize, circleSize);
+  
+  calcWave();
+  renderWave();  
+}
+
+void update(int x, int y)
+{
+  if( overCircle(circleX, circleY, circleSize) ) {
+    circleOver = true;
+    rectOver = false;
+  } else if ( overRect(rectX, rectY, rectSize, rectSize) ) {
+    rectOver = true;
+    circleOver = false;
+  } else {
+    circleOver = rectOver = false;
+  }
+}
+
+void mousePressed()
+{
+  if(circleOver) {
+    currentColor = circleColor;
+  }
+  if(rectOver) {
+    currentColor = rectColor;
+  }
+}
+
+boolean overRect(int x, int y, int width, int height) 
+{
+  if (mouseX >= x && mouseX <= x+width && 
+      mouseY >= y && mouseY <= y+height) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+boolean overCircle(int x, int y, int diameter) 
+{
+  float disX = x - mouseX;
+  float disY = y - mouseY;
+  if(sqrt(sq(disX) + sq(disY)) < diameter/2 ) {
+    return true;
+  } else {
+    return false;
+  }
+}
+void calcWave() {
+  // Increment theta (try different values for 'angular velocity' here
+  theta += 0.02;
+
+  // For every x value, calculate a y value with sine function
+  float x = theta;
+  for (int i = 0; i < yvalues.length; i++) {
+    yvalues[i] = sin(x)*amplitude;
+    x+=dx;
+  }
+}
+
+void renderWave() {
+  // A simple way to draw the wave with an ellipse at each location
+  for (int x = 0; x < yvalues.length; x++) {
+    noStroke();
+    fill(255,50);
+    ellipseMode(CENTER);
+    ellipse(x*xspacing,width/2+yvalues[x],2,2);
+  }
+}
