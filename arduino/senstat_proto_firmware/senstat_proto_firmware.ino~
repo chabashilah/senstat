@@ -1,0 +1,19 @@
+//読み取り値の変数
+int val=0;
+
+void setup(){
+  //シリアル通信開始
+  Serial.begin(9600);
+}
+
+void loop(){
+  //データが０個より多いときの時
+  if(Serial.available()>0){
+    //データの読み込み
+    val=Serial.read();
+    //合図用データ送信(1バイト)
+    Serial.print(65,BYTE);
+  }
+  //アナログ出力(11番ピン)に読み込み値を入れる
+  analogWrite(11,val);
+}
