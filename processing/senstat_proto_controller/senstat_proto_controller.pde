@@ -5,6 +5,9 @@
  * center of the image to change the color of 
  * the background. 
  */
+
+import processing.serial.*;
+
 //Rect parameter
 int buttonRectX, buttonRectY;      // Position of square button
 int buttonRectHeight, buttonRectWidth;     // Diameter of rect
@@ -23,9 +26,13 @@ color rectHighlight;
 color currentColor;
 boolean rectOver = false;
 int statFlag = 0;
+int send_value = 0;
 
 //Font setting
 PFont fontA;
+
+//Instance for Serial port
+Serial port;
 
 int xspacing = 8;   // How far apart should each horizontal location be spaced
 int w;              // Width of entire wave
@@ -35,6 +42,7 @@ float period = 500.0;  // How many pixels before the wave repeats
 float dx;  // Value for incrementing X, a function of period and xspacing
 float[] yvalues;  // Using an array to store height values for the wave
 String [] stat;
+
 
 
 void setup()
@@ -74,6 +82,9 @@ void setup()
     dx = (TWO_PI / period) * xspacing;
     yvalues = new float[w/xspacing];
     stat = new String[]{"OFF", "ON"};
+
+    port = new Serial(this, "/dev/tty.usbserial-A6007wcJ", 115200);
+    frameRate(30);
 }
 
 void draw()
@@ -156,12 +167,19 @@ void renderWave() {
 
     //Display value
     fill(255);
-    int send_value = (int)(150-(yvalues[yvalues.length/2]+amplitude-1));
+    send_value = (int)(150-(yvalues[yvalues.length/2]+amplitude-1));
     text(send_value, sensorTitleLabelX+150, sensorTitleLabelY);
-
-    //send_value
-    if(statFlag){
-
+    if(statFlag==1){
+	port.write(send_value);
     }
+
     
 }
+/*
+void serialEvent(Serial p){
+    //send_value
+    if(statFlag==1){
+	port.write(send_value);
+    }
+}
+*/
