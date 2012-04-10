@@ -1,0 +1,211 @@
+package com.chabashilah.bluetooth_test;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.UUID;
+
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+//import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+//This is for HTTP transmission
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.NameValuePair;
+import java.util.ArrayList;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+
+import org.apache.http.impl.client.BasicResponseHandler;
+
+//import com.chabashilah.bluetooth_test.R.id;
+
+public class Bluetooth_testActivity extends Activity {
+	public static final int MESSAGE_UPDATE_TEXT = 0;
+   private static final String LOG_TAG ="BT_Arduino";
+   /* This UUID is for SSP*/
+   private UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+   private BluetoothDevice btDevice;
+   private BluetoothSocket btSocket;
+   private Thread mThread;
+
+   EditText mEditText;
+   
+   @Override
+   public void onCreate(Bundle savedInstanceState) {
+       super.onCreate(savedInstanceState);
+       setContentView(R.layout.main);
+       //===================UI part===================
+       Button button = (Button) findViewById(R.id.button);
+       // ボタンがクリックされた時に呼び出されるコールバックリスナーを登録します
+       button.setOnClickListener(new View.OnClickListener() {
+           //@Override
+           public void onClick(View v) {
+               // ボタンがクリックされた時に呼び出されます
+               //Button button = (Button) v;
+               Toast.makeText(Bluetooth_testActivity.this, "onClick()",
+                       Toast.LENGTH_SHORT).show();
+           }
+       });
+       
+       mEditText = (EditText) findViewById(R.id.edittext);
+       //==============================================
+       
+       Log.d(LOG_TAG, "Start onCreate");
+       // Getting local Terminal BT adaptor
+       BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+       // Getting device list which is already paired.
+       if(btAdapter == null){
+    	   Log.d(LOG_TAG, "No default adapter is found");
+    	   return;
+       }
+       Set<BluetoothDevice> btDeviceSet = btAdapter.getBondedDevices();
+       if(btDeviceSet == null){
+    	   Log.d(LOG_TAG, "No paired module is found");
+    	   return;   	   
+       }
+       Iterator<BluetoothDevice> it = btDeviceSet.iterator();
+       if(it == null){
+    	   Log.d(LOG_TAG, "No iterator is gotten");
+    	   return;   	   
+       }
+       if(it.hasNext()){
+           // In the meantime, first device is used.
+    	   // However, this is not proper procedure.
+    	   // I need to handle this part more carefully.
+    	   // Write it later.
+           btDevice = it.next();
+           Log.d(LOG_TAG, "btAddr = " + btDevice.getAddress());
+       }
+       try {
+    	   if(btDevice == null){
+    		   Log.d(LOG_TAG, "No device is found");
+    		   return;
+    	   }
+           // Create RFCOMM socket
+           btSocket = btDevice.createRfcommSocketToServiceRecord(uuid);
+           if(btSocket == null){
+        	   Log.d(LOG_TAG, "No socket is found");
+        	   return;
+           }
+           btSocket.connect();
+           mThread = new Thread(new Runnable() {
+               //@Override
+               public void run() {
+                   try {
+                       // connectできればInputStream/OutputStreamで通信できる
+                       InputStream inStream = btSocket.getInputStream();
+                       Log.d(LOG_TAG, "Now reading from input stream");
+                       // Listening input stream
+                       String [] send_data = new String[100];
+                       while(true){
+                    	   int retByte = inStream.read();
+                    	   //String receivedRawData = Integer.toString(inStream.read());
+                    	   //Log.d(LOG_TAG, receivedRawData);
+                    	   Log.d(LOG_TAG, String.valueOf(retByte));
+
+                    	   if (retByte != -1) {
+                    		   //mEditText.setText("test");
+                    		   mHandler.obtainMessage(MESSAGE_UPDATE_TEXT, retByte, -1).sendToTarget();
+                    		   sendSensorData("test_module",retByte,0,0);
+                    		   Log.d(LOG_TAG, "retData = " + Integer.toString(retByte));
+                    	   }
+
+                       }
+                   } catch (IOException e) {
+                       e.printStackTrace();
+                   }
+               }
+           });
+           
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
+   }
+   @Override
+   public synchronized void onResume() {
+	   super.onResume();
+	   if(mThread == null){
+		   Log.d(LOG_TAG, "[onResume]Receive thread doesn't work.");
+		   return;
+	   }
+	   mThread.start();
+	   Log.d(LOG_TAG, "[onResume]Thread function starts");
+   }   
+   
+   @Override
+   public synchronized void onPause() {
+       super.onPause();
+       Log.d(LOG_TAG, "[onPause] Start function.");
+   }
+
+   @Override
+   public void onStop() {
+       super.onStop();
+       Log.d(LOG_TAG, "[onStop] Start function.");
+   }
+   
+   @Override
+   public void onDestroy() {
+       super.onDestroy();
+       Log.d(LOG_TAG, "[onDestory] Start function.");
+       if(mThread == null){
+    	   Log.d(LOG_TAG, "No thread is found.");
+    	   return;
+       }
+       mThread.stop();
+       try {
+           btSocket.close();
+       } catch (IOException e) {	
+           e.printStackTrace();
+       }       
+       
+   }
+   public void sendSensorData(String module_name, int acls_x, int acls_y, int acls_z){
+	   DefaultHttpClient client = new DefaultHttpClient();
+	   HttpPost post = new HttpPost("http://133.138.2.123:3000/save_sensor_data");
+	   ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+	   params.add(new BasicNameValuePair("module_name", module_name));
+	   params.add(new BasicNameValuePair("acls_x", Integer.toString(acls_x)));
+	   try{
+		   post.setEntity(new UrlEncodedFormEntity(params));
+		   Log.d(LOG_TAG, "Now accessing to server");
+	   }catch(IOException e){
+		   e.printStackTrace();
+	   }
+	   
+	   try{
+		   String responseBody = client.execute(post, new BasicResponseHandler());
+		   Log.d(LOG_TAG, "Now getting response from server");
+	   }catch(IOException e){
+		   e.printStackTrace();
+		   
+	   }
+	   
+	   
+   }
+   
+   private final Handler mHandler = new Handler() {
+	   @Override
+       public void handleMessage(Message msg) {
+		   switch (msg.what) {
+		   case MESSAGE_UPDATE_TEXT:
+			   mEditText.setText(Integer.toString(msg.arg1));
+           }
+	   }
+   };
+}
+
+
+

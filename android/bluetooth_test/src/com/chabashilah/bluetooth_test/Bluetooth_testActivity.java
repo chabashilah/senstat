@@ -10,7 +10,7 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
+//import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,6 +19,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+//This is for HTTP transmission
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.NameValuePair;
+import java.util.ArrayList;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+
+import org.apache.http.impl.client.BasicResponseHandler;
 
 //import com.chabashilah.bluetooth_test.R.id;
 
@@ -30,7 +39,7 @@ public class Bluetooth_testActivity extends Activity {
    private BluetoothDevice btDevice;
    private BluetoothSocket btSocket;
    private Thread mThread;
-
+   private String mSendData = "";
    EditText mEditText;
    
    @Override
@@ -99,13 +108,26 @@ public class Bluetooth_testActivity extends Activity {
                        InputStream inStream = btSocket.getInputStream();
                        Log.d(LOG_TAG, "Now reading from input stream");
                        // Listening input stream
+                       
                        while(true){
                     	   int retByte = inStream.read();
-                    	   if (retByte != -1) {
+                    	   //String receivedRawData = Integer.toString(inStream.read());
+                    	   //Log.d(LOG_TAG, receivedRawData);
+                    	   char raw_data[] = {(char)(retByte)};
+                    	   String res_string = new String(raw_data);
+                    	   Log.d(LOG_TAG, res_string);
+                    	   if (res_string.equals("#")) {
                     		   //mEditText.setText("test");
-                    		   mHandler.obtainMessage(MESSAGE_UPDATE_TEXT, retByte, -1).sendToTarget();
-                    		   Log.d(LOG_TAG, "retData = " + Integer.toString(retByte));
+                    		   mHandler.obtainMessage(MESSAGE_UPDATE_TEXT, -1, -1).sendToTarget();
+                    		   String [] split_data = mSendData.split(",");
+                    		   sendSensorData(split_data);
+                    		   Log.d(LOG_TAG, "retData = " + mSendData);
+                    		   //Initialization
+                    		   mSendData = "";
+                    	   }else{
+                    		   mSendData = mSendData + res_string;
                     	   }
+                    	   
                        }
                    } catch (IOException e) {
                        e.printStackTrace();
@@ -156,12 +178,38 @@ public class Bluetooth_testActivity extends Activity {
        }       
        
    }
+   public void sendSensorData(String [] input){
+	   DefaultHttpClient client = new DefaultHttpClient();
+	   HttpPost post = new HttpPost("http://133.138.2.123:3000/save_sensor_data");
+	   ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+	   params.add(new BasicNameValuePair("module_name", input[0]));
+	   params.add(new BasicNameValuePair("acls_x", input[1]));
+	   params.add(new BasicNameValuePair("acls_y", input[2]));
+	   params.add(new BasicNameValuePair("acls_z", input[3]));
+	   try{
+		   post.setEntity(new UrlEncodedFormEntity(params));
+		   Log.d(LOG_TAG, "Now accessing to server");
+	   }catch(IOException e){
+		   e.printStackTrace();
+	   }
+	   
+	   try{
+		   String responseBody = client.execute(post, new BasicResponseHandler());
+		   Log.d(LOG_TAG, "Now getting response from server");
+	   }catch(IOException e){
+		   e.printStackTrace();
+		   
+	   }
+	   
+	   
+   }
+   
    private final Handler mHandler = new Handler() {
 	   @Override
        public void handleMessage(Message msg) {
 		   switch (msg.what) {
 		   case MESSAGE_UPDATE_TEXT:
-			   mEditText.setText(Integer.toString(msg.arg1));
+			   mEditText.setText(mSendData);
            }
 	   }
    };

@@ -43,7 +43,9 @@ float dx;  // Value for incrementing X, a function of period and xspacing
 float[] yvalues;  // Using an array to store height values for the wave
 String [] stat;
 
-
+int send_counter = 0;
+//Module name 
+String module_name = "test_module";
 
 void setup()
 {
@@ -169,8 +171,18 @@ void renderWave() {
     fill(255);
     send_value = (int)(150-(yvalues[yvalues.length/2]+amplitude-1));
     text(send_value, sensorTitleLabelX+150, sensorTitleLabelY);
+    
     if(statFlag==1){
-	port.write(send_value);
+        ++send_counter;
+        if(send_counter == 30){
+          String send_data = 
+            module_name + "," +
+            send_value  + "," +
+            send_value  + "," +
+            send_value  + "#";
+	  port.write(send_data);
+          send_counter = 0;
+        }
     }
 
     

@@ -21,3 +21,6 @@ org.eclipse.core.internal.resources.ResourceException: Resource '/bluetooth_test
 	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
 !SUBENTRY 1 org.eclipse.core.resources 4 368 2012-04-09 23:11:46.465
 !MESSAGE Resource '/bluetooth_test/res' does not exist.
+
+!ENTRY com.android.ide.eclipse.adt 1 0 2012-04-10 14:48:02.226
+!MESSAGE No valid Android XML Editor Delegate found for file /bluetooth_test/AndroidManifest.out.xml [Res null, type null]
