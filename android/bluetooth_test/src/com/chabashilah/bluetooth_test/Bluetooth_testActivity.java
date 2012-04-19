@@ -19,95 +19,91 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-//This is for HTTP transmission
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.NameValuePair;
-import java.util.ArrayList;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
+import android.content.Intent;
 
-import org.apache.http.impl.client.BasicResponseHandler;
 
 //import com.chabashilah.bluetooth_test.R.id;
 
 public class Bluetooth_testActivity extends Activity {
 	public static final int MESSAGE_UPDATE_TEXT = 0;
-   private static final String LOG_TAG ="BT_Arduino";
-   /* This UUID is for SSP*/
-   private UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-   private BluetoothDevice btDevice;
-   private BluetoothSocket btSocket;
-   private Thread mThread;
-   private String mSendData = "";
-   EditText mEditText;
+	private static final String LOG_TAG ="[SENSOR MAIN ACTIVITY]";
+	/* This UUID is for SSP*/
+	private UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+	private BluetoothDevice btDevice;
+	private BluetoothSocket btSocket;
+	private Thread mThread;
+	private String mSendData = "";
+	private ServerAPI sap = new ServerAPI("doumodoumo@gmail.com", "hogehoge");
+	EditText mEditText;
    
-   @Override
-   public void onCreate(Bundle savedInstanceState) {
-       super.onCreate(savedInstanceState);
-       setContentView(R.layout.main);
-       //===================UI part===================
-       Button button = (Button) findViewById(R.id.button);
-       // ボタンがクリックされた時に呼び出されるコールバックリスナーを登録します
-       button.setOnClickListener(new View.OnClickListener() {
-           //@Override
-           public void onClick(View v) {
-               // ボタンがクリックされた時に呼び出されます
-               //Button button = (Button) v;
-               Toast.makeText(Bluetooth_testActivity.this, "onClick()",
-                       Toast.LENGTH_SHORT).show();
-           }
-       });
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.main);
+		//===================UI part===================
+		Button button = (Button) findViewById(R.id.button);
+		// ボタンがクリックされた時に呼び出されるコールバックリスナーを登録します
+		button.setOnClickListener(new View.OnClickListener() {
+			//@Override
+			public void onClick(View v) {
+				// ボタンがクリックされた時に呼び出されます
+				//Button button = (Button) v;
+				//Toast.makeText(Bluetooth_testActivity.this, "onClick()",
+						//Toast.LENGTH_SHORT).show();
+				Intent intent = new Intent(Bluetooth_testActivity.this, LoginActivity.class);
+				startActivity(intent);
+			}
+		});
        
-       mEditText = (EditText) findViewById(R.id.edittext);
-       //==============================================
+		mEditText = (EditText) findViewById(R.id.edittext);
+		//==============================================
        
-       Log.d(LOG_TAG, "Start onCreate");
-       // Getting local Terminal BT adaptor
-       BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
-       // Getting device list which is already paired.
-       if(btAdapter == null){
-    	   Log.d(LOG_TAG, "No default adapter is found");
-    	   return;
-       }
-       Set<BluetoothDevice> btDeviceSet = btAdapter.getBondedDevices();
-       if(btDeviceSet == null){
-    	   Log.d(LOG_TAG, "No paired module is found");
-    	   return;   	   
-       }
-       Iterator<BluetoothDevice> it = btDeviceSet.iterator();
-       if(it == null){
-    	   Log.d(LOG_TAG, "No iterator is gotten");
-    	   return;   	   
-       }
-       if(it.hasNext()){
-           // In the meantime, first device is used.
-    	   // However, this is not proper procedure.
-    	   // I need to handle this part more carefully.
-    	   // Write it later.
-           btDevice = it.next();
-           Log.d(LOG_TAG, "btAddr = " + btDevice.getAddress());
-       }
-       try {
-    	   if(btDevice == null){
-    		   Log.d(LOG_TAG, "No device is found");
-    		   return;
-    	   }
-           // Create RFCOMM socket
-           btSocket = btDevice.createRfcommSocketToServiceRecord(uuid);
-           if(btSocket == null){
-        	   Log.d(LOG_TAG, "No socket is found");
-        	   return;
-           }
-           btSocket.connect();
-           mThread = new Thread(new Runnable() {
-               //@Override
-               public void run() {
-                   try {
-                       // connectできればInputStream/OutputStreamで通信できる
-                       InputStream inStream = btSocket.getInputStream();
-                       Log.d(LOG_TAG, "Now reading from input stream");
-                       // Listening input stream
+		Log.d(LOG_TAG, "Start onCreate");
+		// Getting local Terminal BT adaptor
+		BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+		// Getting device list which is already paired.
+		if(btAdapter == null){
+			Log.d(LOG_TAG, "No default adapter is found");
+			return;
+		}
+		Set<BluetoothDevice> btDeviceSet = btAdapter.getBondedDevices();
+		if(btDeviceSet == null){
+			Log.d(LOG_TAG, "No paired module is found");
+			return;   	   
+		}
+		Iterator<BluetoothDevice> it = btDeviceSet.iterator();
+		if(it == null){
+			Log.d(LOG_TAG, "No iterator is gotten");
+			return;   	   
+		}	
+		if(it.hasNext()){
+			// In the meantime, first device is used.
+			// However, this is not proper procedure.
+			// I need to handle this part more carefully.
+			// Write it later.
+			btDevice = it.next();
+			Log.d(LOG_TAG, "btAddr = " + btDevice.getAddress());
+		}
+		try {
+			if(btDevice == null){
+				Log.d(LOG_TAG, "No device is found");
+				return;
+			}
+			// Create RFCOMM socket
+			btSocket = btDevice.createRfcommSocketToServiceRecord(uuid);
+			if(btSocket == null){
+				Log.d(LOG_TAG, "No socket is found");
+				return;
+			}
+			btSocket.connect();
+			mThread = new Thread(new Runnable() {
+				//@Override
+				public void run() {
+					try {
+						// connectできればInputStream/OutputStreamで通信できる
+						InputStream inStream = btSocket.getInputStream();
+						Log.d(LOG_TAG, "Now reading from input stream");
+						// Listening input stream
                        
                        while(true){
                     	   int retByte = inStream.read();
@@ -115,12 +111,11 @@ public class Bluetooth_testActivity extends Activity {
                     	   //Log.d(LOG_TAG, receivedRawData);
                     	   char raw_data[] = {(char)(retByte)};
                     	   String res_string = new String(raw_data);
-                    	   Log.d(LOG_TAG, res_string);
                     	   if (res_string.equals("#")) {
                     		   //mEditText.setText("test");
                     		   mHandler.obtainMessage(MESSAGE_UPDATE_TEXT, -1, -1).sendToTarget();
                     		   String [] split_data = mSendData.split(",");
-                    		   sendSensorData(split_data);
+                    		   sap.sendSensorData(split_data);
                     		   Log.d(LOG_TAG, "retData = " + mSendData);
                     		   //Initialization
                     		   mSendData = "";
@@ -178,31 +173,7 @@ public class Bluetooth_testActivity extends Activity {
        }       
        
    }
-   public void sendSensorData(String [] input){
-	   DefaultHttpClient client = new DefaultHttpClient();
-	   HttpPost post = new HttpPost("http://133.138.2.123:3000/save_sensor_data");
-	   ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-	   params.add(new BasicNameValuePair("module_name", input[0]));
-	   params.add(new BasicNameValuePair("acls_x", input[1]));
-	   params.add(new BasicNameValuePair("acls_y", input[2]));
-	   params.add(new BasicNameValuePair("acls_z", input[3]));
-	   try{
-		   post.setEntity(new UrlEncodedFormEntity(params));
-		   Log.d(LOG_TAG, "Now accessing to server");
-	   }catch(IOException e){
-		   e.printStackTrace();
-	   }
-	   
-	   try{
-		   String responseBody = client.execute(post, new BasicResponseHandler());
-		   Log.d(LOG_TAG, "Now getting response from server");
-	   }catch(IOException e){
-		   e.printStackTrace();
-		   
-	   }
-	   
-	   
-   }
+   
    
    private final Handler mHandler = new Handler() {
 	   @Override

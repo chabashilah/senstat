@@ -24,3 +24,64 @@ org.eclipse.core.internal.resources.ResourceException: Resource '/bluetooth_test
 
 !ENTRY com.android.ide.eclipse.adt 1 0 2012-04-10 14:48:02.226
 !MESSAGE No valid Android XML Editor Delegate found for file /bluetooth_test/AndroidManifest.out.xml [Res null, type null]
+!SESSION 2012-04-12 12:55:48.583 -----------------------------------------------
+eclipse.buildId=M20120208-0800
+java.version=1.6.0_31
+java.vendor=Apple Inc.
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.jee.product -keyring /Users/chabashilah/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.jee.product -keyring /Users/chabashilah/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.resources 2 10035 2012-04-12 12:56:23.758
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.
+
+!ENTRY org.eclipse.core.net 1 0 2012-04-12 12:56:25.405
+!MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences
+!SESSION 2012-04-12 13:00:57.874 -----------------------------------------------
+eclipse.buildId=M20120208-0800
+java.version=1.6.0_31
+java.vendor=Apple Inc.
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.jee.product -keyring /Users/chabashilah/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.jee.product -keyring /Users/chabashilah/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.net 1 0 2012-04-12 13:01:25.847
+!MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences
+!SESSION 2012-04-12 16:26:26.284 -----------------------------------------------
+eclipse.buildId=M20120208-0800
+java.version=1.6.0_31
+java.vendor=Apple Inc.
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.jee.product -keyring /Users/chabashilah/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.jee.product -keyring /Users/chabashilah/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.resources 2 10035 2012-04-12 16:26:56.197
+!MESSAGE The workspace exited with unsaved changes in the previous session; refreshing workspace to recover changes.
+
+!ENTRY org.eclipse.core.net 1 0 2012-04-12 16:26:59.915
+!MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences
+!SESSION 2012-04-12 17:53:38.487 -----------------------------------------------
+eclipse.buildId=M20120208-0800
+java.version=1.6.0_31
+java.vendor=Apple Inc.
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.jee.product -keyring /Users/chabashilah/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.jee.product -keyring /Users/chabashilah/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.net 1 0 2012-04-12 17:54:47.707
+!MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences
+
+!ENTRY com.android.ide.eclipse.adt 1 0 2012-04-19 15:50:22.258
+!MESSAGE No valid Android XML Editor Delegate found for file /bluetooth_test/AndroidManifest.out.xml [Res null, type null]
+
+!ENTRY org.eclipse.ui.navigator 4 0 2012-04-19 20:20:01.775
+!MESSAGE Cannot find navigator content extension (using triggerPoints) for object "<null>" parent path: "F/bluetooth_test/bin".  Check that you have an expression for this object in a navigatorContent triggerPoints or enablement.
+
+!ENTRY org.eclipse.ui.navigator 4 0 2012-04-19 20:24:30.365
+!MESSAGE Cannot find navigator content extension (using triggerPoints) for object "<null>" parent path: "F/bluetooth_test/bin".  Check that you have an expression for this object in a navigatorContent triggerPoints or enablement.
+
+!ENTRY com.android.ide.eclipse.adt 1 0 2012-04-19 20:28:34.426
+!MESSAGE No valid Android XML Editor Delegate found for file /bluetooth_test/AndroidManifest.out.xml [Res null, type null]
+
+!ENTRY org.eclipse.ui.navigator 4 0 2012-04-19 20:32:24.812
+!MESSAGE Cannot find navigator content extension (using triggerPoints) for object "<null>" parent path: "F/bluetooth_test/bin".  Check that you have an expression for this object in a navigatorContent triggerPoints or enablement.

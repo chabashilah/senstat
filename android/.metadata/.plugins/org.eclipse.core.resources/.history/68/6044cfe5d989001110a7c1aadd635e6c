@@ -1,0 +1,8 @@
+package com.chabashilah.bluetooth_test;
+
+import android.app.Activity;
+
+//ログイン画面
+public class LoginActivity extends Activity {
+
+};

@@ -1,0 +1,63 @@
+package com.chabashilah.bluetooth_test;
+
+
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.NameValuePair;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
+
+import android.util.Log;
+
+
+public class ServerAPI{
+	private String LOG_TAG = "[SENSOR SERVER API]";
+	//These parameter should be in other file.
+	private String HOST = "http://133.138.2.123";
+	private String PORT = ":3000";
+	private DefaultHttpClient _client = new DefaultHttpClient();
+	private static final String _email;
+	private static final String _passowrd;
+	
+	//Constructor
+	ServerAPI(){
+				
+	}
+		
+	private String getAuthToken(){
+		HttpPost post = new HttpPost(HOST + PORT + "/api/v1/tokens.json");
+		post.setHeader("Content-Type", "application/x-www-form-urlencoded");
+		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("email", ));
+		String token = new String();
+		
+		return token;
+	}
+	public void sendSensorData(String [] input){
+		   //DefaultHttpClient client = new DefaultHttpClient();
+		   HttpPost post = new HttpPost(HOST + PORT + "/save_sensor_data");
+		   ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+		   params.add(new BasicNameValuePair("module_name", input[0]));
+		   params.add(new BasicNameValuePair("acls_x", input[1]));
+		   params.add(new BasicNameValuePair("acls_y", input[2]));
+		   params.add(new BasicNameValuePair("acls_z", input[3]));
+		   try{
+			   post.setEntity(new UrlEncodedFormEntity(params));
+			   Log.d(LOG_TAG, "Now accessing to server");
+		   }catch(IOException e){
+			   e.printStackTrace();
+		   }
+		   
+		   try{
+			   String responseBody = _client.execute(post, new BasicResponseHandler());
+			   Log.d(LOG_TAG, "Now getting response from server");
+		   }catch(IOException e){
+			   e.printStackTrace();
+		   }
+	   }
+}

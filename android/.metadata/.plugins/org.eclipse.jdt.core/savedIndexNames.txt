@@ -1,4 +1,3 @@
-INDEX VERSION 1.126+/Users/chabashilah/Dropbox/chabashilah/prv/dev/git/dev_github/android/.metadata/.plugins/org.eclipse.jdt.core
+INDEX VERSION 1.126+/Users/chabashilah/Dropbox/chabashilah/prv/dev/git/github/senstat/android/.metadata/.plugins/org.eclipse.jdt.core
 2487819029.index
-3569227457.index
 2772779998.index

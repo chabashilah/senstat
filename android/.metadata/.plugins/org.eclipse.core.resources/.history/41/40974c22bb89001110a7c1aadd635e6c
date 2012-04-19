@@ -1,0 +1,11 @@
+package com.chabashilah.bluetooth_test;
+
+
+public class ServerAPI extends Object{
+	
+	//Constructor
+	ServerAPI(){
+		
+		
+	}
+}
